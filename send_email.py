@@ -20,6 +20,7 @@ import os
 import sys
 import urllib.parse
 import urllib.request
+from email import policy
 from email.mime.text import MIMEText
 
 SENDER = "tblank1024@gmail.com"
@@ -49,7 +50,7 @@ def main():
     subject = sys.argv[1]
     body = sys.stdin.read()
 
-    msg = MIMEText(body)
+    msg = MIMEText(body, policy=policy.SMTP)
     msg["Subject"] = subject
     msg["From"] = SENDER
     msg["To"] = ", ".join(RECIPIENTS)
