@@ -65,7 +65,7 @@ def main():
     msg["To"] = ", ".join(RECIPIENTS)
     html_body = (
         '<pre style="font-family: Calibri, \'Segoe UI\', Helvetica, Arial, '
-        'sans-serif; font-size: 14px; white-space: pre-wrap;">'
+        'sans-serif; font-size: 15px; white-space: pre-wrap;">'
         f"{html.escape(body)}</pre>"
     )
     msg.attach(MIMEText(body, "plain", policy=policy.SMTP))
