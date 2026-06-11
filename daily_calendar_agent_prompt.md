@@ -49,14 +49,19 @@ XBOT, keep that copy with tag XBOT; otherwise keep any one copy.
 STEP 6 — Build the email body in EXACTLY this format:
 
 ```
-Daily Calendar -- {TODAY as 'Weekday, Month Day, Year'}
+Daily Calendar
 TODAY -- {TODAY as 'Weekday, Month Day'}
 {one line per TODAY event, sorted by start time; '(no events)' if none}
+
 TOMORROW -- {TOMORROW as 'Weekday, Month Day'}
 {one line per TOMORROW event, sorted by start time; '(no events)' if none}
+
 {DAYAFTER as 'Weekday, Month Day'}
 {one line per DAYAFTER event, sorted by start time; '(no events)' if none}
 ```
+
+Leave a blank line after each day's event list (before the next section
+header).
 
 For each section header, make the '---' underline the same length as the
 header text above it.

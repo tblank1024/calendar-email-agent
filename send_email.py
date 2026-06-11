@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Send a plain-text email via the Gmail API over HTTPS using OAuth2.
+"""Send an email via the Gmail API over HTTPS using OAuth2.
 
 Usage:
     python3 send_email.py "<subject>" < body.txt
@@ -13,14 +13,23 @@ gmail.send scope, generated via get_refresh_token.py):
 Uses HTTPS to googleapis.com instead of raw SMTP, so it works in sandboxes
 that block outbound SMTP (ports 25/465/587) but allow HTTPS egress to
 Google APIs.
+
+Sends as multipart/alternative (plain text + HTML <pre> block). Outlook /
+Outlook.com convert plain-text emails to HTML for display and collapse
+single line breaks within a "paragraph" (e.g. a run of lines not separated
+by a line of dashes or a blank line gets joined onto one line). The <pre>
+HTML part preserves line breaks exactly as written, regardless of that
+conversion.
 """
 import base64
+import html
 import json
 import os
 import sys
 import urllib.parse
 import urllib.request
 from email import policy
+from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 SENDER = "tblank1024@gmail.com"
@@ -50,10 +59,12 @@ def main():
     subject = sys.argv[1]
     body = sys.stdin.read()
 
-    msg = MIMEText(body, policy=policy.SMTP)
+    msg = MIMEMultipart("alternative", policy=policy.SMTP)
     msg["Subject"] = subject
     msg["From"] = SENDER
     msg["To"] = ", ".join(RECIPIENTS)
+    msg.attach(MIMEText(body, "plain", policy=policy.SMTP))
+    msg.attach(MIMEText(f"<pre>{html.escape(body)}</pre>", "html", policy=policy.SMTP))
 
     raw = base64.urlsafe_b64encode(msg.as_bytes()).decode()
 
