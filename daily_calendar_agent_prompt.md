@@ -3,7 +3,8 @@
 This is the prompt to use for the scheduled trigger (run daily at ~3:00 AM
 America/Los_Angeles). It assumes the session has access to the Google
 Calendar MCP connector and a checkout of this repo (for `send_email.py`)
-with the `GMAIL_APP_PASSWORD` environment secret configured.
+with the `GMAIL_CLIENT_ID`, `GMAIL_CLIENT_SECRET`, and `GMAIL_REFRESH_TOKEN`
+environment secrets configured.
 
 ---
 
@@ -75,9 +76,10 @@ python3 /path/to/calendar-email-agent/send_email.py "Calendar -- {TODAY as Weekd
 ```
 
 This sends the email from tblank1024@gmail.com to tjblank@hotmail.com and
-tjblank@msn.com via Gmail SMTP using the GMAIL_APP_PASSWORD environment
-secret. Do NOT use the Gmail MCP connector for sending — it only supports
-creating drafts, not sending.
+tjblank@msn.com via the Gmail API over HTTPS, using the GMAIL_CLIENT_ID,
+GMAIL_CLIENT_SECRET, and GMAIL_REFRESH_TOKEN environment secrets. Do NOT
+use the Gmail MCP connector for sending — it only supports creating
+drafts, not sending.
 
 STEP 8 — Report: In your final response, include the full email body and
 confirm it sent successfully (the script prints "Sent to ..."), or report

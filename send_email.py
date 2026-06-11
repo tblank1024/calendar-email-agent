@@ -1,20 +1,44 @@
 #!/usr/bin/env python3
-"""Send a plain-text email via Gmail SMTP using an app password.
+"""Send a plain-text email via the Gmail API over HTTPS using OAuth2.
 
 Usage:
     python3 send_email.py "<subject>" < body.txt
 
-Requires the GMAIL_APP_PASSWORD environment variable to be set to a
-Gmail App Password for the SENDER account (requires 2-Step Verification
-to be enabled on that account).
+Requires these environment variables (OAuth2 client credentials with the
+gmail.send scope, generated via get_refresh_token.py):
+    GMAIL_CLIENT_ID
+    GMAIL_CLIENT_SECRET
+    GMAIL_REFRESH_TOKEN
+
+Uses HTTPS to googleapis.com instead of raw SMTP, so it works in sandboxes
+that block outbound SMTP (ports 25/465/587) but allow HTTPS egress to
+Google APIs.
 """
+import base64
+import json
 import os
-import smtplib
 import sys
+import urllib.parse
+import urllib.request
 from email.mime.text import MIMEText
 
 SENDER = "tblank1024@gmail.com"
 RECIPIENTS = ["tjblank@hotmail.com", "tjblank@msn.com"]
+
+TOKEN_URL = "https://oauth2.googleapis.com/token"
+SEND_URL = "https://gmail.googleapis.com/gmail/v1/users/me/messages/send"
+
+
+def get_access_token():
+    data = urllib.parse.urlencode({
+        "client_id": os.environ["GMAIL_CLIENT_ID"],
+        "client_secret": os.environ["GMAIL_CLIENT_SECRET"],
+        "refresh_token": os.environ["GMAIL_REFRESH_TOKEN"],
+        "grant_type": "refresh_token",
+    }).encode()
+    req = urllib.request.Request(TOKEN_URL, data=data)
+    with urllib.request.urlopen(req) as resp:
+        return json.load(resp)["access_token"]
 
 
 def main():
@@ -25,16 +49,25 @@ def main():
     subject = sys.argv[1]
     body = sys.stdin.read()
 
-    password = os.environ["GMAIL_APP_PASSWORD"]
-
     msg = MIMEText(body)
     msg["Subject"] = subject
     msg["From"] = SENDER
     msg["To"] = ", ".join(RECIPIENTS)
 
-    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-        server.login(SENDER, password)
-        server.sendmail(SENDER, RECIPIENTS, msg.as_string())
+    raw = base64.urlsafe_b64encode(msg.as_bytes()).decode()
+
+    access_token = get_access_token()
+    req = urllib.request.Request(
+        SEND_URL,
+        data=json.dumps({"raw": raw}).encode(),
+        headers={
+            "Authorization": f"Bearer {access_token}",
+            "Content-Type": "application/json",
+        },
+        method="POST",
+    )
+    with urllib.request.urlopen(req) as resp:
+        json.load(resp)
 
     print(f"Sent to {', '.join(RECIPIENTS)}")
 
