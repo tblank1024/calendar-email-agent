@@ -63,8 +63,13 @@ def main():
     msg["Subject"] = subject
     msg["From"] = SENDER
     msg["To"] = ", ".join(RECIPIENTS)
+    html_body = (
+        '<pre style="font-family: Calibri, \'Segoe UI\', Helvetica, Arial, '
+        'sans-serif; font-size: 14px; white-space: pre-wrap;">'
+        f"{html.escape(body)}</pre>"
+    )
     msg.attach(MIMEText(body, "plain", policy=policy.SMTP))
-    msg.attach(MIMEText(f"<pre>{html.escape(body)}</pre>", "html", policy=policy.SMTP))
+    msg.attach(MIMEText(html_body, "html", policy=policy.SMTP))
 
     raw = base64.urlsafe_b64encode(msg.as_bytes()).decode()
 
