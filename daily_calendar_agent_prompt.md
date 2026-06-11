@@ -21,8 +21,15 @@ days.
 
 STEP 2 — List calendars: List all calendars the user is subscribed to.
 Exclude the user's primary calendar and any calendar whose ID ends in
-'@group.v.calendar.google.com'. For each remaining calendar, note its
-display name (use 'summaryOverride' if set, otherwise 'summary').
+'@group.v.calendar.google.com'. For each remaining calendar, determine its
+display name as follows:
+- If the calendar's ID is one of these (these subscriptions report a
+  generic 'Calendar' name via the API, but have been given nicknames in
+  Google Calendar that aren't exposed to this tool), use the name shown:
+  - o0l6umnu0bbboldc6398fkkipp92reig@import.calendar.google.com -> Tom
+  - sbr84a4spfns2mb42ef366tle3d785t2@import.calendar.google.com -> Jeannie
+  - co4r5i1r7pgitf489pdv3mhnlmvc68cg@import.calendar.google.com -> XBOT
+- Otherwise, use 'summaryOverride' if set, otherwise 'summary'.
 
 STEP 3 — Fetch events: For each calendar from Step 2, fetch all events with
 start times between the beginning of TODAY and the end of DAYAFTER (a 3-day
