@@ -38,8 +38,8 @@ STEP 4 — Tag each event:
   - Else -> tag = Jeannie
 - Else if the source calendar's display name contains 'tom'
   (case-insensitive) -> tag = Tom
-- Else -> tag = the event's creator (the event's 'creator.displayName'
-  field if set; otherwise the part of 'creator.email' before the '@')
+- Else -> tag = the calendar's display name (from Step 2:
+  'summaryOverride' if set, otherwise 'summary')
 
 STEP 5 — Deduplicate: If the same event (same title, case-insensitive, and
 same start date/time, or same date for all-day events) appears on more than
