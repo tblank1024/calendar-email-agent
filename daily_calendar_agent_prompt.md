@@ -36,17 +36,8 @@ start times between the beginning of TODAY and the end of DAYAFTER (a 3-day
 window), in America/Los_Angeles time.
 
 STEP 4 — Tag each event:
-- If the event's source calendar's display name contains 'xbot'
-  (case-insensitive) -> tag = XBOT
-- Else if the source calendar's display name contains 'jeannie'
-  (case-insensitive):
-  - If the event title starts with 'FW:' (case-insensitive) or contains
-    'xbot' (case-insensitive) -> tag = XBOT
-  - Else -> tag = Jeannie
-- Else if the source calendar's display name contains 'tom'
-  (case-insensitive) -> tag = Tom
-- Else -> tag = the calendar's display name (from Step 2:
-  'summaryOverride' if set, otherwise 'summary')
+- If the event's source calendar is XBOT (per Step 2) -> tag = XBOT
+- Else -> no tag
 
 STEP 5 — Deduplicate: If the same event (same title, case-insensitive, and
 same start date/time, or same date for all-day events) appears on more than
@@ -75,11 +66,15 @@ header text above it.
 
 Event line format:
 - Timed event: '{3-letter day abbrev} {start h:mm}{AM/PM} - {end h:mm}{AM/PM},
-  [{tag}] {title}'
-  Example: 'Thu 11:00PM - 12:30AM, [Tom] Work on installing pipe at LWUMC'
+  {title}' -- or, if tagged XBOT: '{3-letter day abbrev} {start h:mm}{AM/PM} -
+  {end h:mm}{AM/PM}, [XBOT] {title}'
+  Examples:
+    'Thu 11:00PM - 12:30AM, Work on installing pipe at LWUMC'
+    'Thu 11:00PM - 12:30AM, [XBOT] Robot build session'
   No space before AM/PM. Spaces around the dash. Drop a leading zero from the
   hour (e.g. '1:00PM' not '01:00PM').
-- All-day event: '{3-letter day abbrev}, [{tag}] {title}' (no time portion)
+- All-day event: '{3-letter day abbrev}, {title}' -- or, if tagged XBOT:
+  '{3-letter day abbrev}, [XBOT] {title}' (no time portion)
 
 STEP 7 — Send the email: Write the Step 6 body to a temp file (e.g.
 `/tmp/calendar_body.txt`), then run:
