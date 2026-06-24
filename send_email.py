@@ -63,6 +63,9 @@ def main():
     msg["Subject"] = subject
     msg["From"] = SENDER
     msg["To"] = ", ".join(RECIPIENTS)
+    msg["Importance"] = "high"
+    msg["X-Priority"] = "1"
+    msg["X-MSMail-Priority"] = "High"
     html_body = (
         '<pre style="font-family: Calibri, \'Segoe UI\', Helvetica, Arial, '
         'sans-serif; font-size: 15px; white-space: pre-wrap;">'
